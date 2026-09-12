@@ -6,14 +6,14 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:56 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/12 22:51:46 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/12 22:56:36 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // read, malloc, free
 
-#ifndef get_next_line.h
-# define  get_next_line.h
+#ifndef GET_NEXT_LINE_H
+# define  GET_NEXT_LINE_H
 
 # include <stdlib.h>
 # include <unistd.h>
