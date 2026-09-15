@@ -6,7 +6,7 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:53 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/15 15:45:41 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/15 15:58:00 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,15 @@ static char	*read_loop(char *stash, int fd)
 {
 	char		*buffer;
 	char		*joined;
-	char		*line;
 	ssize_t		bytes_read;
 
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
+	{
+		free(stash);
 		return (NULL);
+	}
+
 	while (!ft_strchr(stash, '\n'))
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -123,10 +126,8 @@ static char	*read_loop(char *stash, int fd)
 			}
 			else
 			{
-				line = stash;
 				free(buffer);
-				stash = NULL;
-				return (line);
+				return (stash);
 			}
 		}
 		buffer[bytes_read] = '\0';
@@ -164,6 +165,7 @@ char	*get_next_line(int fd)
 		stash[0] = '\0';
 	}
 	stash = read_loop(stash, fd);
+	//check here for read_loop output.
 	line = extract_line(stash);
 	if (!line)
 	{
