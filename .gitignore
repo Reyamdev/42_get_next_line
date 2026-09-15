@@ -13,3 +13,4 @@ tests/one_char.txt
 tests/one_newline.txt
 tests/three_newlines.txt
 tests/normal_nl.txt
+test.o

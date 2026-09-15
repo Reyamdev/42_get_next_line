@@ -6,12 +6,13 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:53 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/15 15:58:00 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/15 23:09:49 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
+#include <sys/types.h>
 
 //  For a static local variable, it keeps its value between function calls
 //  instead of being recreated each time.
@@ -92,58 +93,75 @@
 //   loop back and check for '\n'
 //   append logic to stash
 
+static char	*cleanup_read(char *stash, char *buffer)
+{
+	free(stash);
+	free(buffer);
+	return (NULL);
+}
+
+static char	*append_buffer(char *stash, char *buffer, ssize_t bytes_read)
+{
+	char	*joined;
+
+	buffer[bytes_read] = '\0';
+	joined = ft_strjoin(stash, buffer);
+	if (!joined)
+		return (NULL);
+	free(stash);
+	return (joined);
+}
+
 static char	*read_loop(char *stash, int fd)
 {
 	char		*buffer;
-	char		*joined;
 	ssize_t		bytes_read;
+	char		*temp;
 
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-	{
-		free(stash);
-		return (NULL);
-	}
-
+		return (cleanup_read(stash, buffer));
 	while (!ft_strchr(stash, '\n'))
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
-		{
-			if (bytes_read == -1)
-			{
-				free(stash);
-				free(buffer);
-				stash = NULL;
-				return (NULL);
-			}
-			if (bytes_read == 0 && stash[0] == '\0')
-			{
-				free(stash);
-				free(buffer);
-				stash = NULL;
-				return (NULL);
-			}
-			else
-			{
-				free(buffer);
-				return (stash);
-			}
-		}
-		buffer[bytes_read] = '\0';
-		joined = ft_strjoin(stash, buffer);
-		if (!joined)
-		{
-			free(stash);
-			free(buffer);
-			stash = NULL;
-			return (NULL);
-		}
-		free(stash);
-		stash = joined;
+		if (bytes_read < 0)
+			return (cleanup_read(stash, buffer));
+		if (bytes_read == 0)
+			break ;
+		temp = append_buffer(stash, buffer, bytes_read);
+		if (!temp)
+			return (cleanup_read(stash, buffer));
+		stash = temp;
 	}
+	if (stash[0] == '\0')
+		return (cleanup_read(stash, buffer));
 	free(buffer);
 	return (stash);
+}
+
+static char	*extract_lines(char **stash)
+{
+	char	*line;
+	char	*leftover;
+
+	line = extract_line(*stash);
+	if (!line)
+	{
+		free(*stash);
+		*stash = NULL;
+		return (NULL);
+	}
+	leftover = extract_leftover(*stash);
+	if (!leftover)
+	{
+		free(line);
+		free(*stash);
+		*stash = NULL;
+		return (NULL);
+	}
+	free(*stash);
+	*stash = leftover;
+	return (line);
 }
 
 //since stash is static we only need initialization when its NULL.
@@ -151,7 +169,6 @@ char	*get_next_line(int fd)
 {
 	static char	*stash;
 	char		*line;
-	char		*leftover;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -159,29 +176,17 @@ char	*get_next_line(int fd)
 	{
 		stash = malloc(1);
 		if (!stash)
-		{
 			return (NULL);
-		}
 		stash[0] = '\0';
 	}
 	stash = read_loop(stash, fd);
-	//check here for read_loop output.
-	line = extract_line(stash);
-	if (!line)
-	{
-		free(stash);
-		stash = NULL;
+	if (!stash)
 		return (NULL);
-	}
-	leftover = extract_leftover(stash);
-	if (!leftover)
+	if (!ft_strchr(stash, '\n'))
 	{
-		free(line);
-		free(stash);
+		line = stash;
 		stash = NULL;
-		return (NULL);
+		return (line);
 	}
-	free(stash);
-	stash = leftover;
-	return (line);
+	return (extract_lines(&stash));
 }
