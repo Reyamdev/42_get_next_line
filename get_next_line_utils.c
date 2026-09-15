@@ -6,7 +6,7 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:46 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/14 22:41:15 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/15 15:41:57 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
  * Creates and returns a new string containing the first line from 'stash',
  * including the '\n' when present, and adds a terminating '\0'.
  */
-char *extract_line(char *stash)
+char	*extract_line(char *stash)
 {
 	size_t	i;
 	size_t	j;
