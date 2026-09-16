@@ -6,7 +6,7 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:56 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/15 15:43:47 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/15 23:18:46 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # endif
 
 # include <stdlib.h>
+# include <stddef.h>
+// check if stddef needs to be added or not.
+// does it cover size_t at school or not
 # include <unistd.h>
 
 size_t	ft_strlen(const char *str);

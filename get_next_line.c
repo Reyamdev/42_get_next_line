@@ -6,92 +6,60 @@
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 22:23:53 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/15 23:09:49 by reyam            ###   ########.fr       */
+/*   Updated: 2026/09/16 19:19:01 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
-#include <sys/types.h>
 
-//  For a static local variable, it keeps its value between function calls
-//  instead of being recreated each time.
-
-// Keep reading into a static string,
-// check for \n with strchr every loop to see if we need to read again or not.
-
-// EOF + stash has data -> return remaining data
-// EOF + stash empty -> return NULL;
-
-// bytes_read = actual useful data length
-// BUFFER_SIZE = maximum possible read size
-
-//read() == -1 --> read error: free(stash), stash = NULL, return stash;
-
-/* get_next_line(fd)
-
-1. If stash == NULL
-      ↓
-   initialize stash as ""
-
-2. Check stash for '\n'
-
-3. If there is NO '\n'
-      ↓
-   read(fd, buffer, BUFFER_SIZE)
-
-4. Handle read() result
-
-   -1  → error
-          free stash
-          stash = NULL
-          return NULL
-
-    0  → EOF
-          if stash is empty:
-              free stash
-              stash = NULL
-              return NULL
-
-          if stash still has characters:
-              line = stash
-              stash = NULL
-              return line
-
-   >0  → buffer[bytes_read] = '\0'
-          join stash + buffer
-          free old stash
-          stash = joined
-          loop back and check for '\n'
-
-5. Once stash DOES contain '\n'
-      ↓
-   extract_line(stash)
-      ↓
-   "hello\n"
-
-6. extract_leftover(stash)
-      ↓
-   "world"
-
-7. Free old stash
-
-8. stash = new leftover
-
-9. return line
-*/
-
-// 1. Search stash for '\n'
-// 2. Append newly read buffer to stash
-// 3. Extract the line to return
-// 4. Build/update the leftover stash after that line
-
-//   if read > 0 -> buffer[bytes_read] = '\0'
-//   join stash + buffer
-//   free old stash
-//   stash = joined
-//   loop back and check for '\n'
-//   append logic to stash
+/*
+ * Flow of get_next_line:
+ *
+ * get_next_line() keeps unread data inside the static variable 'stash',
+ * so leftover characters survive between consecutive function calls.
+ *
+ * If stash does not exist yet, get_next_line() allocates an empty string.
+ * It then passes stash to read_loop().
+ *
+ * read_loop() allocates a BUFFER_SIZE + 1 buffer and keeps calling read()
+ * while stash does not already contain a '\n'.
+ *
+ * After every successful read(), append_buffer() adds the newly read
+ * characters to stash. append_buffer() first terminates the read buffer
+ * with '\0', joins stash and buffer with ft_strjoin(), frees the old stash,
+ * and returns the newly allocated joined string.
+ *
+ * cleanup_read() is used by read_loop() when an error or allocation failure
+ * occurs. It frees both stash and buffer and returns NULL.
+ *
+ * When read_loop() finishes, there are three possible situations:
+ *
+ * 1. A '\n' exists in stash:
+ *    get_next_line() calls extract_lines().
+ *
+ * 2. EOF was reached but stash still contains characters:
+ *    get_next_line() returns the whole stash as the final line and resets
+ *    the static stash to NULL.
+ *
+ * 3. EOF was reached and stash is empty:
+ *    read_loop() frees it and returns NULL.
+ *
+ * extract_lines() receives &stash because it must modify the actual static
+ * stash pointer inside get_next_line().
+ *
+ * extract_lines() calls extract_line() to allocate the line that will be
+ * returned to the caller. extract_line() finds the first '\n', allocates
+ * enough memory for all characters through that '\n' plus the terminating
+ * '\0', copies them, and returns the new line.
+ *
+ * extract_lines() then calls extract_leftover() to allocate everything
+ * after the first '\n'. The old stash is freed and the static stash is
+ * updated to point to this leftover string for the next get_next_line()
+ * call.
+ *
+ * Therefore, each call returns exactly one line while preserving any
+ * unread characters for the following call.
+ */
 
 static char	*cleanup_read(char *stash, char *buffer)
 {
