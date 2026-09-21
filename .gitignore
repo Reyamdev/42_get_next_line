@@ -14,3 +14,5 @@ tests/one_newline.txt
 tests/three_newlines.txt
 tests/normal_nl.txt
 test.o
+get_next_line_utils.o
+get_next_line.o

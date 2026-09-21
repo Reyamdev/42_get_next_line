@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: reyam <reyam@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/12 22:23:46 by reyam             #+#    #+#             */
-/*   Updated: 2026/09/21 19:32:03 by reyam            ###   ########.fr       */
+/*   Created: 2026/09/21 18:53:31 by reyam             #+#    #+#             */
+/*   Updated: 2026/09/21 19:31:52 by reyam            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#include <stddef.h>
+#include "get_next_line_bonus.h"
 
 /*
  * Returns the number of characters in 'str',
