@@ -1,0 +1,47 @@
+#include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
+
+int	main(int argc, char **argv)
+{
+	int		fd;
+	char	*test;
+
+	if (argc != 2)
+	{
+		printf("Input error, only provide one file\n");
+		return (1);
+	}
+	fd = open(argv[1], O_RDONLY);
+	if (fd == -1)
+	{
+		printf("Opening file failed.\n");
+		return (1);
+	}
+	test = get_next_line(fd);
+	while (test)
+	{
+		printf("%s", test);
+		free(test);
+		test = get_next_line(fd);
+	}
+	close(fd);
+	return (0);
+}
+
+command to test get_next_line
+for size in 1 5 42 9999
+    echo "========== BUFFER_SIZE=$size =========="
+
+    cc -Wall -Wextra -Werror \
+        -fsanitize=address,undefined \
+        -D BUFFER_SIZE=$size \
+        get_next_line.c get_next_line_utils.c test.c \
+        -o test_gnl_asan
+
+    for f in tests/*.txt
+        echo "----- $f -----"
+        ASAN_OPTIONS=detect_leaks=1 ./test_gnl_asan $f
+        echo
+    end
+end

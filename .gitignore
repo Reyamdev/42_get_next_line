@@ -2,17 +2,9 @@ test.c
 Makefile
 test.txt
 test_gnl
-tests/empty.txt
 test_gnl_asan
 output.txt
 a.out
-tests/mixed.txt
-tests/no_final_nl.txt
-tests/one_char_nl.txt
-tests/one_char.txt
-tests/one_newline.txt
-tests/three_newlines.txt
-tests/normal_nl.txt
 test.o
 get_next_line_utils.o
 get_next_line.o
